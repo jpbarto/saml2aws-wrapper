@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# To use this script remember to define an alias in your shell such as
+#
+# $ alias sa='. /usr/local/bin/saml2aws-im'
+#
+# This allows the script to put environment variables into your environment
+
+case "$1" in
+    shell)
+        echo Exporting AWS credentials to the environment
+        saml2aws exec $SHELL -p $AWS_PROFILE
+        ;;
+    console)
+        echo Opening the AWS console...
+        saml2aws console -p $AWS_PROFILE
+        ;;
+    *)
+        echo Logging into $1 profile
+        saml2aws login -p $AWS_PROFILE
+        export AWS_PAGER=""
+        export AWS_PROFILE=$1
+        ;;
+esac

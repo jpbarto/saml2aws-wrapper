@@ -7,6 +7,11 @@
 # This allows the script to put environment variables into your environment
 
 case "$1" in
+    dump_environ)
+        echo '#!/bin/sh' > /tmp/aws_environ.sh
+        env | grep -i aws >> /tmp/aws_environ.sh
+        echo export AWS_CREDENTIAL_EXPIRATION AWS_SESSION_TOKEN AWS_PAGER AWS_PROFILE AWS_DEFAULT_PROFILE AWS_SECRET_ACCESS_KEY AWS_ACCESS_KEY_ID AWS_SECURITY_TOKEN >> /tmp/aws_environ.sh
+        ;;
     shell)
         echo Exporting AWS credentials to the environment
         saml2aws exec $SHELL -p $AWS_PROFILE
@@ -17,8 +22,10 @@ case "$1" in
         ;;
     *)
         echo Logging into $1 profile
-        saml2aws login -p $AWS_PROFILE
+        saml2aws login -p $1
         export AWS_PAGER=""
         export AWS_PROFILE=$1
+        saml2aws exec -p $AWS_PROFILE saml2aws-im dump_environ
+        source /tmp/aws_environ.sh
         ;;
 esac
